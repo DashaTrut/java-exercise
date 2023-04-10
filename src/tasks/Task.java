@@ -1,3 +1,4 @@
+package tasks;
 
 import java.util.Objects;
 
@@ -24,13 +25,13 @@ public class Task {
     public void setId(int id) {
         this.id = id;
     }
-    //            Статус, отображающий её прогресс. Мы будем выделять следующие этапы жизни задачи:
+//            Статус, отображающий её прогресс. Мы будем выделять следующие этапы жизни задачи:
 //    NEW — задача только создана, но к её выполнению ещё не приступили.
 //            IN_PROGRESS — над задачей ведётся работа.
 //    DONE — задача выполнена.
-    public String getTitle() {
-        return title;
-    }
+public String getTitle() {
+    return title;
+}
 
     public void setTitle(String title) {
         this.title = title;
