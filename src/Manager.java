@@ -28,22 +28,24 @@ public class Manager {
         return id;
     }
     public int createSubtask(Subtask subtask) { //создать подзадача
-        int id = subtask.getId();
+
+
         // в сабтаск есть айди этого эпика, и мы по этому йд достаем
         // эпик из хешмапы и складываем ему туда в эрей лист подзадачу которою
         // которую только что создали
         // отмена записываем в аррай лист йд
 // проверить что эпик заданный в сабтаск существует
-        if (subtask.getId() != 0 ) { //проверили чтосуществует эпик с таким айди
+        if (subtask.getIdEpica() != 0 ) { //проверили чтосуществует эпик с таким айди
             subtask.setId(generatedId++);
             subtask.setStatus("NEW");
-            subtasks.put(id, subtask);
+            subtasks.put(subtask.getId(), subtask);
             Epic saveEpic =  epics.get(subtask.getIdEpica());
-            saveEpic.addSubtaskIds(id); //положили в эррейлист эпика подзадачу
+            saveEpic.addSubtaskIds(subtask.getId()); //положили в эррейлист эпика подзадачу
         } else {
-            return id;
+            System.out.println("Такого эпика не существует");
+            return subtask.getId();
         }
-        return id;
+        return subtask.getId();
     }
 //    public void updateTask(tasks.Task task). Если вы храните эпики в HashMap, где ключами являются идентификаторы,
 //    то обновление — это запись нового эпика ).
