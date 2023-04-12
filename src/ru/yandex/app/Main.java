@@ -1,6 +1,6 @@
-import tasks.Epic;
-import tasks.Subtask;
-import tasks.Task;
+package ru.yandex.app;
+
+
 
 public class Main {
 
@@ -38,12 +38,12 @@ public class Main {
                 epic2.getId());
 
         manager.createSubtask(subtask21);
-        System.out.println(epic2.getSubtaskIds(epic2.getId()));
+        System.out.println(epic2.getSubtaskIds());
         System.out.println(manager.getEpicSubtasks(epic2.getId()));
         manager.deleteForIdSubtask(subtask21.getId());
         manager.deleteForIdEpic(epic2.getId());
         System.out.println(manager.getAllEpic());
-        manager.getAllSubtask();
+        System.out.println(manager.getAllSubtask());
 
     }
 }

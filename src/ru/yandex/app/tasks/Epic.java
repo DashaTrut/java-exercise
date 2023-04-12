@@ -1,4 +1,4 @@
-package tasks;
+package ru.yandex.app.tasks;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -24,7 +24,7 @@ public class Epic extends Task {
         subtaskIds.add(id);
     }
 
-    public ArrayList<Integer> getSubtaskIds(Integer id) {
+    public ArrayList<Integer> getSubtaskIds() {
         return subtaskIds;
     } //получаем список при  удалении эпика
 

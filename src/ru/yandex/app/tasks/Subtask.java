@@ -1,18 +1,18 @@
-package tasks;
+package ru.yandex.app.tasks;
 
 import java.util.Objects;
 
 public class Subtask extends Task {
 
 
-    private int idEpica; // поле содержит йд эпика, к которому привязано
+    private int idEpic; // поле содержит йд эпика, к которому привязано
 
-    public Subtask(String title, String content, int id, String status, int idEpica) {
+    public Subtask(String title, String content, int id, String status, int idEpic) {
         super(title, content, id, status);
-        this.idEpica = idEpica;
+        this.idEpic = idEpic;
     }
-    public int getIdEpica() {
-        return idEpica;
+    public int getIdEpic() {
+        return idEpic;
     }
     @Override
     public boolean equals(Object obj){
@@ -22,7 +22,7 @@ public class Subtask extends Task {
         Subtask otherSubtask = (Subtask) obj; // привели второй объект к классу Subtask
         return Objects.equals(title, otherSubtask.title) && Objects.equals(content, otherSubtask.content) &&
                 Objects.equals(status, otherSubtask.status) && (id == otherSubtask.id) &&
-                (idEpica == otherSubtask.idEpica);
+                (idEpic == otherSubtask.idEpic);
     }
     @Override
     public int hashCode() {
@@ -43,7 +43,7 @@ public class Subtask extends Task {
     @Override
     public String toString() {
         return "Subtask{" +
-                "idEpica=" + idEpica +
+                "idEpic=" + idEpic +
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
                 ", id=" + id +

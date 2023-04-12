@@ -1,10 +1,9 @@
-package tasks;
+package ru.yandex.app.tasks;
 
 import java.util.Objects;
 
 public class Task {
     protected String title;
-
 
 
     protected String content;
@@ -25,13 +24,14 @@ public class Task {
     public void setId(int id) {
         this.id = id;
     }
-//            Статус, отображающий её прогресс. Мы будем выделять следующие этапы жизни задачи:
+
+    //            Статус, отображающий её прогресс. Мы будем выделять следующие этапы жизни задачи:
 //    NEW — задача только создана, но к её выполнению ещё не приступили.
 //            IN_PROGRESS — над задачей ведётся работа.
 //    DONE — задача выполнена.
-public String getTitle() {
-    return title;
-}
+    public String getTitle() {
+        return title;
+    }
 
     public void setTitle(String title) {
         this.title = title;
@@ -52,15 +52,16 @@ public String getTitle() {
     public void setStatus(String status) {
         this.status = status;
     }
+
     @Override
-    public boolean equals(Object obj){
+    public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
         if (this.getClass() != obj.getClass()) return false;
         Task otherTask = (Task) obj; // привели второй объект к классу Task
-        return Objects.equals(title, otherTask.title) && Objects.equals(content, otherTask.content) &&
-                Objects.equals(status, otherTask.status) && (id == otherTask.id);
+        return Objects.equals(title, otherTask.title) && Objects.equals(content, otherTask.content) && Objects.equals(status, otherTask.status) && (id == otherTask.id);
     }
+
     @Override
     public int hashCode() {
         int hash = 17;
@@ -79,11 +80,6 @@ public String getTitle() {
 
     @Override
     public String toString() {
-        return "Task{" +
-                "title='" + title + '\'' +
-                ", content='" + content + '\'' +
-                ", id=" + id +
-                ", status='" + status + '\'' +
-                '}';
+        return "Task{" + "title='" + title + '\'' + ", content='" + content + '\'' + ", id=" + id + ", status='" + status + '\'' + '}';
     }
 }
