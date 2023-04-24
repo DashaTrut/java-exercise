@@ -1,12 +1,14 @@
 package ru.yandex.app.tasks;
 
+import ru.yandex.app.manager.Status;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Epic extends Task {
     private final ArrayList<Integer> subtaskIds = new ArrayList<>(); // поле которое хранит подзадачи
 
-    public Epic(String title, String content, int id, String status) {
+    public Epic(String title, String content, int id, Status status) {
         super(title, content, id, status);
     }
 

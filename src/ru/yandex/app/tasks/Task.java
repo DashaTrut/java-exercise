@@ -1,16 +1,18 @@
 package ru.yandex.app.tasks;
 
+import ru.yandex.app.manager.Status;
+
 import java.util.Objects;
 
-public class Task {
+public  class  Task {
     protected String title;
 
 
     protected String content;
     protected int id;
-    protected String status;
+    protected Status status;
 
-    public Task(String title, String content, int id, String status) {
+    public Task(String title, String content, int id, Status status) {
         this.title = title;
         this.content = content;
         this.id = id;
@@ -45,11 +47,11 @@ public class Task {
         this.content = content;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

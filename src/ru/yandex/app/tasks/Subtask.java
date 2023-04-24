@@ -1,5 +1,7 @@
 package ru.yandex.app.tasks;
 
+import ru.yandex.app.manager.Status;
+
 import java.util.Objects;
 
 public class Subtask extends Task {
@@ -7,7 +9,7 @@ public class Subtask extends Task {
 
     private int idEpic; // поле содержит йд эпика, к которому привязано
 
-    public Subtask(String title, String content, int id, String status, int idEpic) {
+    public Subtask(String title, String content, int id, Status status, int idEpic) {
         super(title, content, id, status);
         this.idEpic = idEpic;
     }
