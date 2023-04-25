@@ -1,7 +1,5 @@
 package ru.yandex.app.tasks;
 
-import ru.yandex.app.manager.Status;
-
 import java.util.Objects;
 
 public  class  Task {

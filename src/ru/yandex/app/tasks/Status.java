@@ -1,4 +1,4 @@
-package ru.yandex.app.manager;
+package ru.yandex.app.tasks;
 
 public enum Status {
     NEW,

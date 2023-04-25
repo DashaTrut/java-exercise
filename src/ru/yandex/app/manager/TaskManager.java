@@ -28,23 +28,25 @@ public interface TaskManager {
 
     public void deleteAllSubtask();
 
-    public ArrayList<Task> getAllTask();
+    public List<Task> getAllTask();
 
-    public ArrayList<Epic> getAllEpic();
+    public List<Epic> getAllEpic();
 
-    public ArrayList<Subtask> getAllSubtask();
+    public List<Subtask> getAllSubtask();
 
     public void deleteForIdTask(int id);
 
-    public void deleteForIdEpic(int id) ;
+    public void deleteForIdEpic(int id);
 
-    public void deleteForIdSubtask(int id) ;
+    public void deleteForIdSubtask(int id);
 
-    public List<Subtask> getEpicSubtasks(int id) ;
+    public List<Subtask> getEpicSubtasks(int id);
 
     public Task getTask(int id);
+
     public Epic getEpic(int id);
 
+    public Subtask getSubtask(int id);
 
     public List<Task> getHistory();
 }

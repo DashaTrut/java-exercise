@@ -5,7 +5,8 @@ import ru.yandex.app.tasks.Task;
 import java.util.ArrayList;
 
 public interface HistoryManager {
-    public void addHistory(Task task);
-    public ArrayList<Task> getHistory();
+    void addHistory(Task task);
+
+    ArrayList<Task> getHistory();
 
 }

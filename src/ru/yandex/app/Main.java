@@ -1,11 +1,10 @@
 package ru.yandex.app;
-import ru.yandex.app.manager.InMemoryTaskManager;
 import ru.yandex.app.manager.Managers;
 import ru.yandex.app.manager.TaskManager;
 import ru.yandex.app.tasks.Epic;
 import ru.yandex.app.tasks.Subtask;
 import ru.yandex.app.tasks.Task;
-import ru.yandex.app.manager.Status;
+import ru.yandex.app.tasks.Status;
 
 public class Main {
 
