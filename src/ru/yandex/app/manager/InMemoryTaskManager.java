@@ -80,10 +80,9 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    @Override
-    public void statusEpic(Epic epic) { //метод подсчета статуса эпика
+
+    private void statusEpic(Epic epic) { //метод подсчета статуса эпика
         int statusNew = 0;
-        int statusInProgress = 0;
         int statusDone = 0;
         ArrayList<Integer> listThis = epic.getSubtaskIds();
         if (listThis.size() > 0) {
@@ -91,8 +90,6 @@ public class InMemoryTaskManager implements TaskManager {
                 Subtask subtask = subtasks.get(list);
                 if (subtask.getStatus() == Status.NEW) {
                     statusNew++;
-                } else if (subtask.getStatus() == Status.IN_PROGRESS) {
-                    statusInProgress++;
                 } else if (subtask.getStatus() == Status.DONE) {
                     statusDone++;
                 }
@@ -125,15 +122,23 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllTask() { // удаление всех задач
+        for (Task task : tasks.values()) {
+            inMemoryHistoryManager.remove(task.getId());
+        }
         tasks.clear();
     }
 
     @Override
     public void deleteAllEpic() {
-        epics.clear();
 
-        //по идее когда удаляешь все эпики, должны удальться и все сабтаски и чистить
+        for (Epic epic : epics.values()) {
+            inMemoryHistoryManager.remove(epic.getId());
+        }
+        epics.clear();    //по идее когда удаляешь все эпики, должны удальться и все сабтаски и чистить
         //эррей лист, я хочу вызвать метод удаления сабтасков в методе удаления эпиков, но ошибка сивол эпик не определен
+        for (Subtask subtask : subtasks.values()) {
+            inMemoryHistoryManager.remove(subtask.getId());
+        }
         subtasks.clear();
     }
 
@@ -143,6 +148,8 @@ public class InMemoryTaskManager implements TaskManager {
         for (Epic epic : epics.values()) {
             epic.cleanSubtaskIds();
             statusEpic(epic);
+            inMemoryHistoryManager.remove(epic.getId());
+
         }
     }
 
@@ -176,14 +183,17 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteForIdTask(int id) { // удаление задачи по идентификатору
         tasks.remove(id);
+        inMemoryHistoryManager.remove(id);
     }
 
     @Override
     public void deleteForIdEpic(int id) { // удаление  большой задачи по идентификатору
         Epic epic = epics.get(id);
         epics.remove(id);
+        inMemoryHistoryManager.remove(id);
         for (int deleteId : epic.getSubtaskIds()) {
             subtasks.remove(deleteId);
+            inMemoryHistoryManager.remove(deleteId);
         }
     }
 
@@ -191,10 +201,11 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteForIdSubtask(int id) { // удаление подзадачи по идентификатору
         Subtask subtask = subtasks.get(id);
         Epic epic = epics.get(subtask.getIdEpic());
-        if (subtasks.remove(id) != null) {
-            epic.removeSubtaskId(subtask.getId());
-            statusEpic(epic);
-        }
+        subtasks.remove(id);
+        epic.removeSubtaskId(subtask.getId());
+
+        statusEpic(epic);
+
     }
 
     @Override
@@ -220,6 +231,7 @@ public class InMemoryTaskManager implements TaskManager {
         inMemoryHistoryManager.addHistory(epics.get(id));
         return epics.get(id);
     }
+
     @Override
     public Subtask getSubtask(int id) {
         inMemoryHistoryManager.addHistory(subtasks.get(id)); //получение таска по айди

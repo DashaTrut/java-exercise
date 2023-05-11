@@ -4,50 +4,47 @@ import ru.yandex.app.tasks.Epic;
 import ru.yandex.app.tasks.Subtask;
 import ru.yandex.app.tasks.Task;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface TaskManager {
-    public int createTask(Task task);
+    int createTask(Task task);
 
-    public int createEpic(Epic epic);
+    int createEpic(Epic epic);
 
-    public int createSubtask(Subtask subtask);
+    int createSubtask(Subtask subtask);
 
-    public void updateTask(Task task);
+    void updateTask(Task task);
 
-    public void updateEpic(Epic epic);
+    void updateEpic(Epic epic);
 
-    public void statusEpic(Epic epic);
+    void updateSubtask(Subtask subtask);
 
-    public void updateSubtask(Subtask subtask);
+    void deleteAllTask();
 
-    public void deleteAllTask();
+    void deleteAllEpic();
 
-    public void deleteAllEpic();
+    void deleteAllSubtask();
 
-    public void deleteAllSubtask();
+    List<Task> getAllTask();
 
-    public List<Task> getAllTask();
+    List<Epic> getAllEpic();
 
-    public List<Epic> getAllEpic();
+    List<Subtask> getAllSubtask();
 
-    public List<Subtask> getAllSubtask();
+    void deleteForIdTask(int id);
 
-    public void deleteForIdTask(int id);
+    void deleteForIdEpic(int id);
 
-    public void deleteForIdEpic(int id);
+    void deleteForIdSubtask(int id);
 
-    public void deleteForIdSubtask(int id);
+    List<Subtask> getEpicSubtasks(int id);
 
-    public List<Subtask> getEpicSubtasks(int id);
+    Task getTask(int id);
 
-    public Task getTask(int id);
+    Epic getEpic(int id);
 
-    public Epic getEpic(int id);
+    Subtask getSubtask(int id);
 
-    public Subtask getSubtask(int id);
-
-    public List<Task> getHistory();
+    List<Task> getHistory();
 }
 
