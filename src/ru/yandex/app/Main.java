@@ -13,7 +13,9 @@ public class Main {
 
         System.out.println("Поехали!");
 
+
         TaskManager manager = Managers.getDefault();
+        System.out.println("!!!!!!!" + manager.getHistory());
         Task task = new Task("Уборка", "а", 0, Status.NEW);
         int newId = manager.createTask(task);
         manager.getTask(newId);
@@ -50,10 +52,18 @@ public class Main {
         System.out.println(manager.getSubtask(subtask21.getId()));
         System.out.println("!!!!!!!" + manager.getHistory());
         manager.deleteForIdSubtask(subtask21.getId());
+        System.out.println("!!!!!!!" + manager.getHistory());
         manager.deleteForIdEpic(epic2.getId());
         System.out.println(manager.getAllEpic());
         System.out.println(manager.getAllSubtask());
         System.out.println(manager.getEpic(epic.getId()));
+        System.out.println("!!!!!!!" + manager.getHistory());
+        manager.deleteAllEpic();
+        manager.deleteAllSubtask();
+        manager.deleteAllTask();
+        Epic epic15 = new Epic("Доделать код", "а", 0, Status.NEW);
+        manager.createEpic(epic15);
+        manager.getEpic(epic15.getId());
         System.out.println("!!!!!!!" + manager.getHistory());
 
     }
