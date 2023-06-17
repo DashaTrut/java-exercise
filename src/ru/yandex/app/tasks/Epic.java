@@ -1,14 +1,34 @@
 package ru.yandex.app.tasks;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Epic extends Task {
+
+
+    private LocalDateTime endTime;
     private final ArrayList<Integer> subtaskIds = new ArrayList<>(); // поле которое хранит подзадачи
 
+
+
+
+    public Epic(String title, String content, int id, Status status, int duration, LocalDateTime startTime) {
+        super(title, content, id, status, duration,  startTime);
+        type = TypeTask.EPIC;
+        this.endTime = null;
+        //endTime = durationSubtaskForEpic();
+    }
     public Epic(String title, String content, int id, Status status) {
         super(title, content, id, status);
+        type = TypeTask.EPIC;
+        this.endTime = null;
+
     }
+
+
+
 
     @Override
     public boolean equals(Object obj){
@@ -60,4 +80,12 @@ public class Epic extends Task {
                 ", status='" + status + '\'' +
                 '}';
     }
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+
 }

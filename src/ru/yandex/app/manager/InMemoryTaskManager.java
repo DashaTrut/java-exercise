@@ -5,17 +5,21 @@ import ru.yandex.app.tasks.Status;
 import ru.yandex.app.tasks.Subtask;
 import ru.yandex.app.tasks.Task;
 
+
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+
 public class InMemoryTaskManager implements TaskManager {
 
-    private final HashMap<Integer, Task> tasks = new HashMap<>();
-    private final HashMap<Integer, Epic> epics = new HashMap<>(); //хэшмапы по айди и виду задачи
-    private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
-    private int generatedId = 1;
-    private final HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
+    protected final HashMap<Integer, Task> tasks = new HashMap<>();
+    protected final HashMap<Integer, Epic> epics = new HashMap<>(); //хэшмапы по айди и виду задачи
+    protected final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    protected int generatedId = 1;
+    protected final HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
 
     @Override
     public int createTask(Task task) { // create - создать
@@ -28,9 +32,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int createEpic(Epic epic) { //создать большая задача
+        epic.setId(generatedId++);
         epic.setStatus(Status.NEW);
         int id = epic.getId();
-        epic.setId(generatedId++);
+        //int duration = durationSubtaskForEpic(epic);
+        //epic.setDuration(duration);
+
+
         epics.put(epic.getId(), epic);
         return id;
     }
@@ -44,6 +52,10 @@ public class InMemoryTaskManager implements TaskManager {
             Epic saveEpic = epics.get(subtask.getIdEpic());
             saveEpic.addSubtaskIds(subtask.getId()); //положили в эррейлист эпика подзадачу
             statusEpic(saveEpic);
+            int duration = durationSubtaskForEpic(saveEpic);
+            saveEpic.setDuration(duration);
+            startTimeSubtaskForEpic(saveEpic);
+            endTimeSubtaskForEpic(saveEpic);
         } else {
             System.out.println("Такого эпика не существует");
         }
@@ -66,12 +78,83 @@ public class InMemoryTaskManager implements TaskManager {
             Epic oldEpic = epics.get(epic.getId());
             oldEpic.setTitle(epic.getTitle());
             oldEpic.setContent(epic.getContent());
+            statusEpic(oldEpic);
         } else {
             System.out.println("Невозможно обновить подзадачу");
         }
     }
+    private int durationSubtaskForEpic(Epic epic) {
+        int durationEpic = 0;
+        ArrayList<Integer> listThis = epic.getSubtaskIds();
+        if (listThis.size() > 0) {
+            for (int list : listThis) {
+                Subtask subtask = subtasks.get(list);
+                if (subtask.getDuration() != 0){
+                 durationEpic = durationEpic + subtask.getDuration();
+                 epic.setDuration(durationEpic);
+                }
+            }
+            return durationEpic;
+        }
+            //Duration durationEpic0 = Duration.ofMinutes(0);
+        epic.setDuration(0);
+            return 0;
+    }
+
+    private void startTimeSubtaskForEpic(Epic epic) { //может быть войд
+        int minIdStartSubtask = 0;
+        ArrayList<Integer> listThis = epic.getSubtaskIds();
+        if (listThis.size() > 0) {
+            if ((subtasks.get(listThis.get(0))).getStartTime() != null){
+            for (int i = 0; i < listThis.size(); i++) {
+                int list = listThis.get(i);
+                Subtask subtask = subtasks.get(list);
+
+                    if (i == 0){
+                        minIdStartSubtask = subtask.getId();
+
+                    }
+                    else if (subtask.getStartTime().isBefore(subtasks.get(minIdStartSubtask).getStartTime())) {
+                        minIdStartSubtask = subtask.getId();
+                    }
+                }
 
 
+            Subtask subtaskReturn = subtasks.get(minIdStartSubtask);
+            epic.setStartTime(subtaskReturn.getStartTime());//тут ошибка, если нулл нельзя вызывать его
+            return ;
+        }
+        }
+        epic.setStartTime(null);
+    }
+
+    private LocalDateTime endTimeSubtaskForEpic(Epic epic) { //может быть войд
+        int maxIdStartSubtask = 0;
+        ArrayList<Integer> listThis = epic.getSubtaskIds();
+        if ((listThis.size() > 0)) {
+            if (subtasks.get(listThis.get(0)).getEndTime() != null){
+            for (int i = 0; i < listThis.size(); i++) {
+                int list = listThis.get(i);
+                Subtask subtask = subtasks.get(list);
+
+                    if (i == 1){
+                        maxIdStartSubtask = subtask.getId();
+
+                    }
+                    else if (subtask.getEndTime().isAfter((subtasks.get(maxIdStartSubtask).getStartTime()))) {
+                        maxIdStartSubtask = subtask.getId();
+                    }
+                }
+
+
+            Subtask subtaskReturn = subtasks.get(maxIdStartSubtask);
+            epic.setEndTime(subtaskReturn.getEndTime());
+            return subtaskReturn.getEndTime();
+        }
+        }
+        epic.setEndTime(null);
+        return null;
+    }
     private void statusEpic(Epic epic) { //метод подсчета статуса эпика
         int statusNew = 0;
         int statusDone = 0;
@@ -243,4 +326,5 @@ public class InMemoryTaskManager implements TaskManager {
     public List<Task> getHistory() { //отдает список истории
         return inMemoryHistoryManager.getHistory();
     }
+
 }

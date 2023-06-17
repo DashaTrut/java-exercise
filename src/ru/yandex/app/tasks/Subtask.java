@@ -1,5 +1,7 @@
 package ru.yandex.app.tasks;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Subtask extends Task {
@@ -7,9 +9,15 @@ public class Subtask extends Task {
 
     private int idEpic; // поле содержит йд эпика, к которому привязано
 
+    public Subtask(String title, String content, int id, Status status, int idEpic, int duration, LocalDateTime startTime) {
+        super(title, content, id, status, duration, startTime);
+        this.idEpic = idEpic;
+        type = TypeTask.SUB_TASK;
+    }
     public Subtask(String title, String content, int id, Status status, int idEpic) {
         super(title, content, id, status);
         this.idEpic = idEpic;
+        type = TypeTask.SUB_TASK;
     }
     public int getIdEpic() {
         return idEpic;

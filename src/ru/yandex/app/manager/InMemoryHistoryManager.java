@@ -34,7 +34,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public List<Task> getHistory() { //выдает эррей лист и проверяет что он не более 10позиций
-       return customLinkedList.getTasks();
+        return customLinkedList.getTasks();
     }
 
 
@@ -76,7 +76,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
                 next.prev = previous;
                 previous.next = next;
-            }  else if ((node.next == null)) { //удаляем хвост
+            } else if ((node.next == null)) { //удаляем хвост
                 Node<T> previous = node.prev;
                 if (previous == null) {
                     head = null;
@@ -90,8 +90,8 @@ public class InMemoryHistoryManager implements HistoryManager {
                 next.prev = null;
                 head = next;
             }
-            }
         }
+    }
 
     ;
 }

@@ -1,20 +1,42 @@
 package ru.yandex.app.tasks;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
-public  class  Task {
+public class Task {
     protected String title;
 
 
     protected String content;
     protected int id;
     protected Status status;
+    protected TypeTask type = TypeTask.TASK;
+    protected int duration ;//продолжительность задачи, оценка того, сколько времени она займёт в минутах (число);
+    protected LocalDateTime startTime ;// дата, когда предполагается приступить к выполнению задачи.
+
+
+
+    public Task(String title, String content, int id, Status status, int duration, LocalDateTime startTime) {
+        this.title = title;
+        this.content = content;
+        this.id = id;
+        this.status = status;
+        this.duration = duration;
+        this.startTime = startTime;
+    }
 
     public Task(String title, String content, int id, Status status) {
         this.title = title;
         this.content = content;
         this.id = id;
         this.status = status;
+        this.duration = 0;
+        this.startTime = null;
+    }
+
+    public TypeTask getType() {
+        return type;
     }
 
     public int getId() {
@@ -82,4 +104,30 @@ public  class  Task {
     public String toString() {
         return "Task{" + "title='" + title + '\'' + ", content='" + content + '\'' + ", id=" + id + ", status='" + status + '\'' + '}';
     }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (getStartTime() != null) {
+            Duration duration1 = Duration.ofMinutes(duration);
+            LocalDateTime getEndTime = startTime.plus(duration1);
+            return getEndTime;
+        }
+        return null;
+    }
+
 }
