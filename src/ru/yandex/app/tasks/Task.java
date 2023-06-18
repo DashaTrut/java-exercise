@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class Task {
+public class Task implements Comparable<Task>{
     protected String title;
 
 
@@ -130,4 +130,21 @@ public class Task {
         return null;
     }
 
+    @Override
+    public int compareTo(Task task) {
+    int a = 0;
+    if (task.startTime.equals(null)){
+        return 1;
+    } else if (this.getStartTime().isBefore(task.getStartTime())){
+        return 1;
+    } else if (this.getStartTime().isAfter(task.getStartTime())){
+        return -1;
+    } else {
+        return 0;
+    }
+    }
+//    Интерфейс Comparable содержит один единственный метод int compareTo(E item), который сравнивает текущий объект с
+//    объектом, переданным в качестве параметра. Если этот метод возвращает отрицательное число, то текущий объект будет
+//    располагаться перед тем, который передается через параметр. Если метод вернет положительное число, то, наоборот, п
+//    осле второго объекта. Если метод возвратит ноль, значит, оба объекта равны.
 }

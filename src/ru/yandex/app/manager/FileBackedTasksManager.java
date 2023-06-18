@@ -8,7 +8,9 @@ import ru.yandex.app.tasks.Task;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.TreeSet;
 
 import static ru.yandex.app.tasks.Status.*;
 import static ru.yandex.app.tasks.TypeTask.*;
@@ -235,7 +237,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     Task task = new Task(strings[2], strings[4], Integer.parseInt(strings[0]),
                             Status.valueOf(strings[3]));
                     task.setDuration(Integer.parseInt(strings[5]));
-                    if ((strings[6])!= "null"){
+                    if ((strings[6]).equals(null)){
                     task.setStartTime(LocalDateTime.of(Integer.parseInt(strings[6]), Integer.parseInt(strings[7]),
                             Integer.parseInt(strings[8]), Integer.parseInt(strings[9]),
                             Integer.parseInt(strings[10])));
@@ -248,7 +250,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     Subtask subtask = new Subtask(strings[2], strings[4], Integer.parseInt(strings[0]),
                             Status.valueOf(strings[3]), Integer.parseInt(strings[5]));
                     subtask.setDuration(Integer.parseInt(strings[6]));
-                    if (Integer.parseInt(strings[7])!= 0){
+                    if ((strings[7]).equals(null)){
                         subtask.setStartTime(LocalDateTime.of(Integer.parseInt(strings[7]), Integer.parseInt(strings[8]),
                                 Integer.parseInt(strings[9]), Integer.parseInt(strings[10]),
                                 Integer.parseInt(strings[11])));
@@ -261,7 +263,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     Epic epic = new Epic(strings[2], strings[4], Integer.parseInt(strings[0]),
                             Status.valueOf(strings[3]));
                     epic.setDuration(Integer.parseInt(strings[5]));
-                    if (Integer.parseInt(strings[6])!= 0){
+                    if ((strings[6]).equals(null)){
                         epic.setStartTime(LocalDateTime.of(Integer.parseInt(strings[6]), Integer.parseInt(strings[7]),
                                 Integer.parseInt(strings[8]), Integer.parseInt(strings[9]),
                                 Integer.parseInt(strings[10])));
@@ -305,6 +307,23 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private void subtaskPut(Subtask subtask) {
         subtasks.put(subtask.getId(), subtask);
     }
+    public List<Task> getPrioritizedTasks(){
+        TreeSet<Task> set = new TreeSet<Task>();
+        for (Task task: tasks.values()){
+            set.add(task);
+        }
+        for (Epic epic : epics.values()){
+            set.add(epic);
+        }
+        for (Subtask subtask : subtasks.values()){
+            set.add(subtask);
+        }
+        ArrayList<Task> myList = new ArrayList<Task>(set);
+        return  myList;
+
+    }
+
+
 
     public static void main(String[] args) {
         File file = new File("./BestDatabase.csv");
@@ -325,12 +344,17 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         fileBackedTasksManager1.getSubtask(idS);
         int id1 = fileBackedTasksManager1.createSubtask(subtask1);
         fileBackedTasksManager1.getSubtask(id1);
+        Task task666 = new Task("Уборка6", "а", 0, Status.NEW, 20,
+                LocalDateTime.of(2023, 4, 15, 14, 40));
+        int id666 = fileBackedTasksManager1.createTask(task666);
+        fileBackedTasksManager1.getTask(id666);
         System.out.println("!!!!!!!" + fileBackedTasksManager1.getHistory());
         System.out.println("!!!!!!!" + fileBackedTasksManager1.getHistory());
         System.out.println("!!!!!!!" + fileBackedTasksManager1.getAllTask());
         System.out.println("!!!!!!!" + fileBackedTasksManager1.getAllSubtask());
         System.out.println("!!!!!!!" + fileBackedTasksManager1.getAllEpic());
         FileBackedTasksManager fileBackedTasksManager2 = FileBackedTasksManager.loadFromFile(file);
+        System.out.println(task666.getStartTime());
         System.out.println("?!!!!!!" + fileBackedTasksManager2.getHistory());
         Task task2 = new Task("проверка", "а", 0, Status.NEW);
         int newId2 = fileBackedTasksManager2.createTask(task2);
@@ -338,8 +362,17 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.println("?!!!!!!" + fileBackedTasksManager2.getAllTask());
         System.out.println("?!!!!!!" + fileBackedTasksManager2.getAllSubtask());
         System.out.println("?!!!!!!" + fileBackedTasksManager2.getAllEpic());
+        System.out.println(fileBackedTasksManager2.getPrioritizedTasks());
+
+
 
     }
 
+//    Comparator<Task> userComparator = new Comparator<>() {
+//        @Override
+//        public int compare(User user1, User user2) {
+//            return  user1.name.compareTo(user2.name);
+//        }
+//    };
 }
 
