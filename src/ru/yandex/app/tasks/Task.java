@@ -4,17 +4,16 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class Task implements Comparable<Task>{
+public class Task implements Comparable<Task> {
     protected String title;
 
 
     protected String content;
     protected int id;
-    protected Status status;
+    public Status status;
     protected TypeTask type = TypeTask.TASK;
-    protected int duration ;//продолжительность задачи, оценка того, сколько времени она займёт в минутах (число);
-    protected LocalDateTime startTime ;// дата, когда предполагается приступить к выполнению задачи.
-
+    protected int duration;//продолжительность задачи, оценка того, сколько времени она займёт в минутах (число);
+    protected LocalDateTime startTime;// дата, когда предполагается приступить к выполнению задачи.
 
 
     public Task(String title, String content, int id, Status status, int duration, LocalDateTime startTime) {
@@ -132,16 +131,31 @@ public class Task implements Comparable<Task>{
 
     @Override
     public int compareTo(Task task) {
-    int a = 0;
-    if (task.startTime.equals(null)){
-        return 1;
-    } else if (this.getStartTime().isBefore(task.getStartTime())){
-        return 1;
-    } else if (this.getStartTime().isAfter(task.getStartTime())){
-        return -1;
-    } else {
-        return 0;
-    }
+        if ((task.getStartTime() == null) && (this.getStartTime() == null)) {
+            if (this.getId() < task.getId()) {
+                return -1;
+            } else {
+                return 1;
+            }
+        } else if ((this.getStartTime() != null) && (task.getStartTime() != null)) {
+            if (this.getStartTime().isBefore(task.getStartTime())) {
+                return -1;
+            } else {
+                return 1;
+            }
+        } else {
+            if ((this.getStartTime() != null)) {
+                return -1;
+            } else {
+                if (this.getId() < task.getId()) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+
+            }
+
+        }
     }
 //    Интерфейс Comparable содержит один единственный метод int compareTo(E item), который сравнивает текущий объект с
 //    объектом, переданным в качестве параметра. Если этот метод возвращает отрицательное число, то текущий объект будет

@@ -1,22 +1,27 @@
 package ru.yandex.app.manager;
 
+import ru.yandex.app.server.HttpTaskServer;
 import ru.yandex.app.tasks.Epic;
 import ru.yandex.app.tasks.Status;
 import ru.yandex.app.tasks.Subtask;
 import ru.yandex.app.tasks.Task;
 
 import java.io.*;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
 
-import static ru.yandex.app.tasks.Status.*;
+
 import static ru.yandex.app.tasks.TypeTask.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
     private final File file;
+
+    public File getFile() {
+        return file;
+    }
 
     public FileBackedTasksManager(File file) {
         this.file = file;
@@ -124,6 +129,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return list;
     }
 
+
     @Override
     public Task getTask(int id) {
         Task task = super.getTask(id);
@@ -160,7 +166,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             fileWriter.write(" \n"); //добавляет пустую строку
             if (!historyToString().isBlank()) {
                 fileWriter.write(historyToString());
-            } else {fileWriter.write(" ");}
+            } else {
+                fileWriter.write(" ");
+            }
 
             //вызвать метод записывающий историю
         } catch (IOException e) {
@@ -178,12 +186,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private String toString(Subtask subtask) { //создает строку из подзадачи
         String line = String.format("%s,%s,%s,%s,%s,%s,%s,%s\n", subtask.getId(), subtask.getType(), subtask.getTitle(),
                 subtask.getStatus(), subtask.getContent(), subtask.getIdEpic(), subtask.getDuration(), subtask.getStartTime());
+
         return line;
     }
 
     private String toString(Epic epic) { //создает строку из эпика
         String line = String.format("%s,%s,%s,%s,%s,%s,%s\n", epic.getId(), epic.getType(), epic.getTitle(),
                 epic.getStatus(), epic.getContent(), epic.getDuration(), epic.getStartTime());
+
         return line;
     }
 
@@ -193,9 +203,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         StringBuilder sb = new StringBuilder();
 
         for (Task task : list) {
-            if (!task.equals(" ")){
-            sb.append(task.getId() + ",");
-        } else {return sb.toString();}
+            if (!task.equals(" ")) {
+                sb.append(task.getId() + ",");
+            } else {
+                return sb.toString();
+            }
         }
         return sb.toString();
     }
@@ -231,16 +243,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             for (int i = 0; i < (lineList.size() - 2); i++) {
 
                 String s = lineList.get(i);
-                // for (String s : lineList) {
                 String[] strings = s.split(",");
                 if ((TASK.toString()).equals(strings[1])) {
                     Task task = new Task(strings[2], strings[4], Integer.parseInt(strings[0]),
                             Status.valueOf(strings[3]));
                     task.setDuration(Integer.parseInt(strings[5]));
-                    if ((strings[6]).equals(null)){
-                    task.setStartTime(LocalDateTime.of(Integer.parseInt(strings[6]), Integer.parseInt(strings[7]),
-                            Integer.parseInt(strings[8]), Integer.parseInt(strings[9]),
-                            Integer.parseInt(strings[10])));
+                    if (!(strings[6]).equals("null")) {
+                        task.setStartTime(LocalDateTime.parse(strings[6]));
                     } else {
                         task.setStartTime(null);
                     }
@@ -250,39 +259,38 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     Subtask subtask = new Subtask(strings[2], strings[4], Integer.parseInt(strings[0]),
                             Status.valueOf(strings[3]), Integer.parseInt(strings[5]));
                     subtask.setDuration(Integer.parseInt(strings[6]));
-                    if ((strings[7]).equals(null)){
-                        subtask.setStartTime(LocalDateTime.of(Integer.parseInt(strings[7]), Integer.parseInt(strings[8]),
-                                Integer.parseInt(strings[9]), Integer.parseInt(strings[10]),
-                                Integer.parseInt(strings[11])));
+
+                    if (!(strings[7]).equals("null")) {
+                        subtask.setStartTime(LocalDateTime.parse(strings[7]));
+                        fileBackedTasksManager.subtaskPut(subtask);
+                        // fileBackedTasksManager.endTime(subtask.getIdEpic());
+
                     } else {
                         subtask.setStartTime(null);
+                        fileBackedTasksManager.subtaskPut(subtask);
                     }
-                    fileBackedTasksManager.subtaskPut(subtask);
                 }
                 if (strings[1].equals(EPIC.toString())) {
                     Epic epic = new Epic(strings[2], strings[4], Integer.parseInt(strings[0]),
                             Status.valueOf(strings[3]));
                     epic.setDuration(Integer.parseInt(strings[5]));
-                    if ((strings[6]).equals(null)){
-                        epic.setStartTime(LocalDateTime.of(Integer.parseInt(strings[6]), Integer.parseInt(strings[7]),
-                                Integer.parseInt(strings[8]), Integer.parseInt(strings[9]),
-                                Integer.parseInt(strings[10])));
+                    if (!(strings[6]).equals("null")) {
+                        epic.setStartTime(LocalDateTime.parse(strings[6]));
                     } else {
                         epic.setStartTime(null);
                     }
-
-
                     fileBackedTasksManager.epicPut(epic);
                 }
 
             }
             List<Subtask> subtaskList = fileBackedTasksManager.getAllSubtask();
-            if (subtaskList.size()>0){
-            for (Subtask subtask : subtaskList) {
-                Epic epic = fileBackedTasksManager.epics.get(subtask.getIdEpic());
-                if (epic != null) {
-                    epic.addSubtaskIds(subtask.getId());
-                }
+            if (subtaskList.size() > 0) {
+                for (Subtask subtask : subtaskList) {
+                    Epic epic = fileBackedTasksManager.epics.get(subtask.getIdEpic());
+                    if (epic != null) {
+                        epic.addSubtaskIds(subtask.getId());
+                    }
+                    fileBackedTasksManager.endTime(subtask.getIdEpic());
                 }
             }
             int i = lineList.size() - 1; // если это последняя строка в файле делаем историю вызовов из строки
@@ -307,25 +315,31 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private void subtaskPut(Subtask subtask) {
         subtasks.put(subtask.getId(), subtask);
     }
-    public List<Task> getPrioritizedTasks(){
-        TreeSet<Task> set = new TreeSet<Task>();
-        for (Task task: tasks.values()){
+
+    private void endTime(Integer idEpic) {
+        endTimeSubtaskForEpic(epics.get(idEpic));
+    }
+
+    @Override
+    public List<Task> getPrioritizedTasks() {
+        TreeSet<Task> set = new TreeSet<>();
+        for (Task task : tasks.values()) {
             set.add(task);
         }
-        for (Epic epic : epics.values()){
+        for (Epic epic : epics.values()) {
             set.add(epic);
         }
-        for (Subtask subtask : subtasks.values()){
+
+        for (Subtask subtask : subtasks.values()) {
             set.add(subtask);
         }
         ArrayList<Task> myList = new ArrayList<Task>(set);
-        return  myList;
+        return myList;
 
     }
 
 
-
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         File file = new File("./BestDatabase.csv");
         FileBackedTasksManager fileBackedTasksManager1 = new FileBackedTasksManager(file);
         Task task = new Task("Уборка", "а", 0, Status.NEW);
@@ -344,10 +358,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         fileBackedTasksManager1.getSubtask(idS);
         int id1 = fileBackedTasksManager1.createSubtask(subtask1);
         fileBackedTasksManager1.getSubtask(id1);
-        Task task666 = new Task("Уборка6", "а", 0, Status.NEW, 20,
+        Subtask task666 = new Subtask("66Уборка6", "а", 0, Status.NEW, epic.getId(), 20,
                 LocalDateTime.of(2023, 4, 15, 14, 40));
-        int id666 = fileBackedTasksManager1.createTask(task666);
-        fileBackedTasksManager1.getTask(id666);
+        int id666 = fileBackedTasksManager1.createSubtask(task666);
+        fileBackedTasksManager1.getEpic(id666);
         System.out.println("!!!!!!!" + fileBackedTasksManager1.getHistory());
         System.out.println("!!!!!!!" + fileBackedTasksManager1.getHistory());
         System.out.println("!!!!!!!" + fileBackedTasksManager1.getAllTask());
@@ -362,17 +376,26 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.println("?!!!!!!" + fileBackedTasksManager2.getAllTask());
         System.out.println("?!!!!!!" + fileBackedTasksManager2.getAllSubtask());
         System.out.println("?!!!!!!" + fileBackedTasksManager2.getAllEpic());
+        Task task6666 = new Task("Уборка66666", "а", 0, Status.NEW, 20,
+                LocalDateTime.of(2023, 4, 14, 14, 40));
+        int idd = fileBackedTasksManager2.createTask(task6666);
+        fileBackedTasksManager2.getTask(idd);
         System.out.println(fileBackedTasksManager2.getPrioritizedTasks());
+        System.out.println(epic.getEndTime());
+        System.out.println(epic.getStartTime());
+        System.out.println(epic.getDuration());
 
+        HttpTaskServer httpTaskServer = new HttpTaskServer(8080, fileBackedTasksManager1);
 
-
+            httpTaskServer.startServer();
+       // URI url = URI.create("http://localhost:8080/tasks/task/");
+//        Gson gson = new Gson();
+//        String json = gson.toJson(task);
+//        final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
+//
+//       // HttpRequest request = HttpRequest.newBuilder().uri(url).POST(body).build();
+//      System.out.println(json);
     }
 
-//    Comparator<Task> userComparator = new Comparator<>() {
-//        @Override
-//        public int compare(User user1, User user2) {
-//            return  user1.name.compareTo(user2.name);
-//        }
-//    };
 }
 

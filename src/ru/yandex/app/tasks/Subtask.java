@@ -14,16 +14,19 @@ public class Subtask extends Task {
         this.idEpic = idEpic;
         type = TypeTask.SUB_TASK;
     }
+
     public Subtask(String title, String content, int id, Status status, int idEpic) {
         super(title, content, id, status);
         this.idEpic = idEpic;
         type = TypeTask.SUB_TASK;
     }
+
     public int getIdEpic() {
         return idEpic;
     }
+
     @Override
-    public boolean equals(Object obj){
+    public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
         if (this.getClass() != obj.getClass()) return false;
@@ -32,6 +35,7 @@ public class Subtask extends Task {
                 Objects.equals(status, otherSubtask.status) && (id == otherSubtask.id) &&
                 (idEpic == otherSubtask.idEpic);
     }
+
     @Override
     public int hashCode() {
         int hash = 17;

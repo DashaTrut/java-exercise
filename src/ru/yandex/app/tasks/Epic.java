@@ -12,14 +12,13 @@ public class Epic extends Task {
     private final ArrayList<Integer> subtaskIds = new ArrayList<>(); // поле которое хранит подзадачи
 
 
-
-
     public Epic(String title, String content, int id, Status status, int duration, LocalDateTime startTime) {
-        super(title, content, id, status, duration,  startTime);
+        super(title, content, id, status, duration, startTime);
         type = TypeTask.EPIC;
         this.endTime = null;
         //endTime = durationSubtaskForEpic();
     }
+
     public Epic(String title, String content, int id, Status status) {
         super(title, content, id, status);
         type = TypeTask.EPIC;
@@ -28,10 +27,8 @@ public class Epic extends Task {
     }
 
 
-
-
     @Override
-    public boolean equals(Object obj){
+    public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
         if (this.getClass() != obj.getClass()) return false;
@@ -40,6 +37,7 @@ public class Epic extends Task {
                 Objects.equals(status, otherEpic.status) && Objects.equals(subtaskIds, otherEpic.subtaskIds)
                 && (id == otherEpic.id);
     }
+
     public void addSubtaskIds(Integer id) {
         subtaskIds.add(id);
     }
@@ -48,12 +46,14 @@ public class Epic extends Task {
         return subtaskIds;
     } //получаем список при  удалении эпика
 
-    public  void cleanSubtaskIds() {//очищаем когда удаляем все подзадачи !!! вроде просто очищаем
+    public void cleanSubtaskIds() {//очищаем когда удаляем все подзадачи !!! вроде просто очищаем
         subtaskIds.clear();
     }
+
     public void removeSubtaskId(Integer id) { //удаляем когда удаляется по id подзадача
         subtaskIds.remove(id);
     }
+
     @Override
     public int hashCode() {
         int hash = 17;
@@ -80,9 +80,11 @@ public class Epic extends Task {
                 ", status='" + status + '\'' +
                 '}';
     }
+
     public LocalDateTime getEndTime() {
         return endTime;
     }
+
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
