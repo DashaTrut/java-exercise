@@ -385,7 +385,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.println(epic.getStartTime());
         System.out.println(epic.getDuration());
 
-        HttpTaskServer httpTaskServer = new HttpTaskServer(8080, fileBackedTasksManager1);
+        HttpTaskServer httpTaskServer = new HttpTaskServer(8080, fileBackedTasksManager2);
 
             httpTaskServer.startServer();
        // URI url = URI.create("http://localhost:8080/tasks/task/");
@@ -394,7 +394,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 //        final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
 //
 //       // HttpRequest request = HttpRequest.newBuilder().uri(url).POST(body).build();
-//      System.out.println(json);
+ System.out.println(fileBackedTasksManager2.getAllTask());
+
+        System.out.println( fileBackedTasksManager1.getTask(6));
     }
 
 }

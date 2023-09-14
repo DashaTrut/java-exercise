@@ -1,8 +1,12 @@
 package ru.yandex.app.manager;
 
+import ru.yandex.app.server.HttpTaskManager;
+
+import java.io.File;
+
 public class Managers {
-    public static TaskManager getDefault() {
-        return new InMemoryTaskManager();
+    public static HttpTaskManager getDefault() {
+        return new HttpTaskManager(new File("./BestDatabase.csv"), true);
     }
 
     public static HistoryManager getDefaultHistory() {

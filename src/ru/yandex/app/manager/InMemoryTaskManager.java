@@ -100,8 +100,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateTask(Task task) {  // обновление задачи
         if (tasks.containsKey(task.getId()) && (!timeCrossing(task))) {
-            prioritizedTasks.remove(task); //prioritizedTasks.remove(task.getId());
-
+            prioritizedTasks.remove(tasks.get(task.getId()));
             tasks.put(task.getId(), task); //положили по старому айди, новую задачу не
             prioritizedTasks.add(task);
         } else {
@@ -221,7 +220,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateSubtask(Subtask subtask) {// обновление подзадачи
         if ((subtasks.containsKey(subtask.getId())) &&
                 (epics.containsKey(subtask.getIdEpic())) && (!timeCrossing(subtask))) {
-            prioritizedTasks.remove(subtask);
+            prioritizedTasks.remove(subtasks.get(subtask.getId()));
             subtasks.put(subtask.getId(), subtask);
             prioritizedTasks.add(subtask);
             //положили по старому айди, новую подзадачу // в эррейлист не добавляем, т.к. не меняется айди
@@ -245,14 +244,16 @@ public class InMemoryTaskManager implements TaskManager {
 
         for (Epic epic : epics.values()) {
             inMemoryHistoryManager.remove(epic.getId());
+            prioritizedTasks.remove(epic);
         }
         epics.clear();    //по идее когда удаляешь все эпики, должны удальться и все сабтаски и чистить
         //эррей лист, я хочу вызвать метод удаления сабтасков в методе удаления эпиков, но ошибка сивол эпик не определен
         for (Subtask subtask : subtasks.values()) {
             inMemoryHistoryManager.remove(subtask.getId());
+            prioritizedTasks.remove(subtask);
         }
         subtasks.clear();
-        prioritizedTasks.clear();
+
     }
 
     @Override

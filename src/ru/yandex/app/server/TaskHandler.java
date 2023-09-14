@@ -1,13 +1,9 @@
 package ru.yandex.app.server;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import ru.yandex.app.manager.FileBackedTasksManager;
-import ru.yandex.app.manager.TaskManager;
 import ru.yandex.app.tasks.Epic;
 import ru.yandex.app.tasks.Subtask;
 import ru.yandex.app.tasks.Task;
@@ -16,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 
 public class TaskHandler implements HttpHandler {
@@ -45,6 +42,7 @@ public class TaskHandler implements HttpHandler {
                 break;
         }
     }
+
     //разбивка повторому слешу таск,сабтаск, эпик, история и все по времени
     private void handlerGetRequest(HttpExchange exchange) throws IOException {
         String[] pathParts = exchange.getRequestURI().getPath().split("/");
@@ -70,12 +68,13 @@ public class TaskHandler implements HttpHandler {
                 break;
         }
     }
-    //гет таск,  по айди
+
     private void handlerGetTaskRequest(HttpExchange exchange) throws IOException {
         int id;
         String query = exchange.getRequestURI().getQuery();
-        if (query.equals(null)) {
-            fileBackedTasksManager.getAllTask();
+        if (query == (null)) {
+            List<Task> taskList = fileBackedTasksManager.getAllTask();
+            System.out.println(taskList);
             writeResponse("Задачи получены", exchange, 200);
             return;
         } else {
@@ -93,7 +92,8 @@ public class TaskHandler implements HttpHandler {
             writeResponse("Задача получена", exchange, 200);
         }
     }
-//гет эпик по айди
+
+    //гет эпик по айди
     private void handlerGetEpicRequest(HttpExchange exchange) throws IOException {
         int id;
         String query = exchange.getRequestURI().getQuery();
@@ -116,7 +116,8 @@ public class TaskHandler implements HttpHandler {
             writeResponse("Задача получена", exchange, 200);
         }
     }
-//гет сабтаск по айди
+
+    //гет сабтаск по айди и сабтаск эпик
     private void handlerGetSubtaskRequest(HttpExchange exchange) throws IOException {
         int id;
         String[] path = exchange.getRequestURI().getPath().split("/");
@@ -139,7 +140,7 @@ public class TaskHandler implements HttpHandler {
                 return;
             }
         }
-        try {
+        try { //тут ветка для subtask/epic/?id=1
             String[] strId = (query).split("=");
             id = Integer.parseInt(strId[1]);
         } catch (NumberFormatException exception) {
@@ -153,7 +154,7 @@ public class TaskHandler implements HttpHandler {
         writeResponse("Задача получена", exchange, 200);
     }
 
-//разбивка по второму слэшу с методом пост
+    //разбивка по второму слэшу с методом пост. создание задач
     private void handlerPostRequest(HttpExchange exchange) throws IOException {
         String[] pathParts = exchange.getRequestURI().getPath().split("/");
         String task = pathParts[2];
@@ -162,10 +163,10 @@ public class TaskHandler implements HttpHandler {
                 handlerPostTaskRequest(exchange);
                 break;
             case ("epic"):
-
+                handlerPostEpicRequest(exchange);
                 break;
             case ("subtask"):
-
+                handlerPostSubtaskRequest(exchange);
                 break;
 
             default:
@@ -173,18 +174,134 @@ public class TaskHandler implements HttpHandler {
                 break;
         }
     }
-//пост таск, создание задачи
+
+    //пост таск, создание задачи
     private void handlerPostTaskRequest(HttpExchange exchange) throws IOException {
-        InputStream body = exchange.getRequestBody();
-        Task gsonTask = gson.fromJson((new String(body.readAllBytes(), StandardCharsets.UTF_8)), Task.class);
-        fileBackedTasksManager.createTask(gsonTask);
+        InputStream inputStream = exchange.getRequestBody();
+        String body = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        System.out.println("Тело запроса:\n" + body);
+        Task gsonTask = gson.fromJson(body, Task.class);
+        if ((fileBackedTasksManager.getTask(gsonTask.getId())) != null) {
+            fileBackedTasksManager.updateTask(gsonTask);
+            writeResponse("Изменена задача", exchange, 200);
+        } else {
+            int id = fileBackedTasksManager.createTask(gsonTask);
+            writeResponse("Создана задача с id =" + id, exchange, 200);
+        }
 
     }
 
-    private void handlerDeleteRequest(HttpExchange exchange) {
+    //пост эпик, создание эпика
+    private void handlerPostEpicRequest(HttpExchange exchange) throws IOException {
+        InputStream inputStream = exchange.getRequestBody();
+        String body = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        System.out.println("Тело запроса:\n" + body);
+        Epic gsonEpic = gson.fromJson(body, Epic.class);
+        if ((fileBackedTasksManager.getEpic(gsonEpic.getId())) != null) {
+            fileBackedTasksManager.updateEpic(gsonEpic);
+            writeResponse("Изменен эпик", exchange, 200);
+        } else {
+            int id = fileBackedTasksManager.createEpic(gsonEpic);
+            writeResponse("Создан эпик с id =" + id, exchange, 200);
+        }
 
     }
 
+    //пост сабтаск, создание подзадачи
+    private void handlerPostSubtaskRequest(HttpExchange exchange) throws IOException {
+        InputStream inputStream = exchange.getRequestBody();
+        String body = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        System.out.println("Тело запроса:\n" + body);
+        Subtask gsonSubtask = gson.fromJson(body, Subtask.class);
+        if (fileBackedTasksManager.getSubtask(gsonSubtask.getId()) == null) {
+            fileBackedTasksManager.updateSubtask(gsonSubtask);
+            writeResponse("Изменен эпик", exchange, 200);
+        } else {
+            int id = fileBackedTasksManager.createSubtask(gsonSubtask);
+            writeResponse("Создан эпик с id =" + id, exchange, 200);
+        }
+    }
+
+    //разбивка по второму слешу с методом делит на таски, подзадачи, эпики
+    private void handlerDeleteRequest(HttpExchange exchange) throws IOException {
+        String[] pathParts = exchange.getRequestURI().getPath().split("/");
+        String task = pathParts[2];
+        switch (task) {
+            case ("task"):
+                handlerDeleteTaskRequest(exchange);
+                break;
+            case ("epic"):
+                handlerDeleteEpicRequest(exchange);
+                break;
+            case ("subtask"):
+                handlerDeleteSubtaskRequest(exchange);
+                break;
+
+            default:
+                writeResponse("Неправильный адрес", exchange, 400);
+                break;
+        }
+    }
+
+    //удалить таск
+    private void handlerDeleteTaskRequest(HttpExchange exchange) throws IOException {
+        int id;
+        String query = exchange.getRequestURI().getQuery();
+        if (query.equals(null)) {
+            fileBackedTasksManager.deleteAllTask();
+            writeResponse("Задачи удалены", exchange, 200);
+        } else {
+            try {
+                String[] strId = (query).split("=");
+                id = Integer.parseInt(strId[1]);
+            } catch (NumberFormatException exception) {
+                writeResponse("Некорректный идентификатор задачи ", exchange, 400);
+                return;
+            }
+            fileBackedTasksManager.deleteForIdTask(id);
+            writeResponse("Задача удалена", exchange, 200);
+        }
+    }
+
+    //удалить эпик
+    private void handlerDeleteEpicRequest(HttpExchange exchange) throws IOException {
+        int id;
+        String query = exchange.getRequestURI().getQuery();
+        if (query.equals(null)) {
+            fileBackedTasksManager.deleteAllTask();
+            writeResponse("Задачи удалены", exchange, 200);
+        } else {
+            try {
+                String[] strId = (query).split("=");
+                id = Integer.parseInt(strId[1]);
+            } catch (NumberFormatException exception) {
+                writeResponse("Некорректный идентификатор задачи ", exchange, 400);
+                return;
+            }
+            fileBackedTasksManager.deleteForIdEpic(id);
+            writeResponse("Задача удалена", exchange, 200);
+        }
+    }
+
+    //удалить сабтаск
+    private void handlerDeleteSubtaskRequest(HttpExchange exchange) throws IOException {
+        int id;
+        String query = exchange.getRequestURI().getQuery();
+        if (query.equals(null)) {
+            fileBackedTasksManager.deleteAllTask();
+            writeResponse("Задачи удалены", exchange, 200);
+        } else {
+            try {
+                String[] strId = (query).split("=");
+                id = Integer.parseInt(strId[1]);
+            } catch (NumberFormatException exception) {
+                writeResponse("Некорректный идентификатор задачи ", exchange, 400);
+                return;
+            }
+            fileBackedTasksManager.deleteForIdEpic(id);
+            writeResponse("Задача удалена", exchange, 200);
+        }
+    }
 
     private void writeResponse(String body, HttpExchange exchange, int code) throws IOException {
         byte[] responseBody = body.getBytes(StandardCharsets.UTF_8);
