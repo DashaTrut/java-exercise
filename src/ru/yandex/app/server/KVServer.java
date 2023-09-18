@@ -39,7 +39,7 @@ public class KVServer {
                 String key = h.getRequestURI().getPath().substring("/load/".length());
                 if (key.isEmpty()) {
                     System.out.println("Key для загрузки пустой. key указывается в пути: /load/{key}");
-                    h.sendResponseHeaders(400, 0);
+                    h.sendResponseHeaders(404, 0);
                     return;
                 }
 
@@ -66,13 +66,13 @@ public class KVServer {
                 String key = h.getRequestURI().getPath().substring("/save/".length());
                 if (key.isEmpty()) {
                     System.out.println("Key для сохранения пустой. key указывается в пути: /save/{key}");
-                    h.sendResponseHeaders(400, 0);
+                    h.sendResponseHeaders(404, 0);
                     return;
                 }
                 String value = readText(h);
                 if (value.isEmpty()) {
                     System.out.println("Value для сохранения пустой. value указывается в теле запроса");
-                    h.sendResponseHeaders(400, 0);
+                    h.sendResponseHeaders(404, 0);
                     return;
                 }
                 data.put(key, value);

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import ru.yandex.app.manager.FileBackedTasksManager;
+import ru.yandex.app.manager.TaskManager;
 import ru.yandex.app.tasks.Epic;
 import ru.yandex.app.tasks.Subtask;
 import ru.yandex.app.tasks.Task;
@@ -18,9 +19,9 @@ import java.util.List;
 public class TaskHandler implements HttpHandler {
     private final Gson gson = new Gson();
 
-    protected final FileBackedTasksManager fileBackedTasksManager;
+    protected final TaskManager fileBackedTasksManager;
 
-    public TaskHandler(FileBackedTasksManager fileBackedTasksManager) {
+    public TaskHandler(TaskManager fileBackedTasksManager) {
         this.fileBackedTasksManager = fileBackedTasksManager;
     }
 
@@ -59,10 +60,10 @@ public class TaskHandler implements HttpHandler {
                 handlerGetSubtaskRequest(exchange);
                 break;
             case ("history"):
-                fileBackedTasksManager.getHistory();
+                writeResponse(fileBackedTasksManager.getHistory().toString(), exchange, 200);
                 break;
             case (""):
-                fileBackedTasksManager.getPrioritizedTasks();
+                writeResponse( fileBackedTasksManager.getPrioritizedTasks().toString(), exchange, 400);
             default:
                 writeResponse("Неправильный адрес", exchange, 400);
                 break;
@@ -74,8 +75,8 @@ public class TaskHandler implements HttpHandler {
         String query = exchange.getRequestURI().getQuery();
         if (query == (null)) {
             List<Task> taskList = fileBackedTasksManager.getAllTask();
-            System.out.println(taskList);
-            writeResponse("Задачи получены", exchange, 200);
+            //System.out.println(taskList);
+            writeResponse(taskList.toString(), exchange, 200);
             return;
         } else {
             try {
@@ -89,7 +90,7 @@ public class TaskHandler implements HttpHandler {
             if (task.getTitle().equals(null)) {
                 writeResponse("Некорректный идентификатор поста", exchange, 400);
             }
-            writeResponse("Задача получена", exchange, 200);
+            writeResponse(task.toString(), exchange, 200);
         }
     }
 
@@ -98,8 +99,8 @@ public class TaskHandler implements HttpHandler {
         int id;
         String query = exchange.getRequestURI().getQuery();
         if (query.equals(null)) {
-            fileBackedTasksManager.getAllEpic();
-            writeResponse("Задачи получены", exchange, 200);
+            List<Epic> epicList = fileBackedTasksManager.getAllEpic();
+            writeResponse(epicList.toString(), exchange, 200);
             return;
         } else {
             try {
@@ -113,7 +114,7 @@ public class TaskHandler implements HttpHandler {
             if (epic.equals(null)) {
                 writeResponse("Некорректный идентификатор поста", exchange, 400);
             }
-            writeResponse("Задача получена", exchange, 200);
+            writeResponse(epic.toString(), exchange, 200);
         }
     }
 
@@ -123,8 +124,8 @@ public class TaskHandler implements HttpHandler {
         String[] path = exchange.getRequestURI().getPath().split("/");
         String query = exchange.getRequestURI().getQuery();
         if (query.equals(null)) {
-            fileBackedTasksManager.getAllSubtask();
-            writeResponse("Задачи получены", exchange, 200);
+            List<Subtask> subtaskList = fileBackedTasksManager.getAllSubtask();
+            writeResponse(subtaskList.toString(), exchange, 200);
             return;
         } else {
             if (path.length == 3) {
@@ -135,8 +136,8 @@ public class TaskHandler implements HttpHandler {
                     writeResponse("Некорректный идентификатор поста", exchange, 400);
                     return;
                 }
-                fileBackedTasksManager.getEpicSubtasks(id);
-                writeResponse("Задача получена", exchange, 200);
+                List<Subtask> list= fileBackedTasksManager.getEpicSubtasks(id);
+                writeResponse(list.toString(), exchange, 200);
                 return;
             }
         }
@@ -151,7 +152,7 @@ public class TaskHandler implements HttpHandler {
         if (subtask.equals(null)) {
             writeResponse("Некорректный идентификатор поста", exchange, 400);
         }
-        writeResponse("Задача получена", exchange, 200);
+        writeResponse(subtask.toString(), exchange, 200);
     }
 
     //разбивка по второму слэшу с методом пост. создание задач

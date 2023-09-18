@@ -45,7 +45,6 @@ public class HttpTaskManager extends FileBackedTasksManager {
                 if (id > generatedId) {
                     generatedId = id + 1;
                 }
-                //task.setId(id);
                 tasks.put(id, task);
                 prioritizedTasks.add(task);
             }
@@ -62,7 +61,6 @@ public class HttpTaskManager extends FileBackedTasksManager {
                     generatedId = id + 1;
                 }
                 epics.put(id, epic);
-                prioritizedTasks.add(epic);
             }
         }
 

@@ -1,10 +1,9 @@
 package ru.yandex.app.test;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.app.manager.FileBackedTasksManager;
 import ru.yandex.app.server.HttpTaskManager;
-import ru.yandex.app.server.HttpTaskServer;
 import ru.yandex.app.server.KVSException;
 import ru.yandex.app.server.KVServer;
 import ru.yandex.app.tasks.Epic;
@@ -20,9 +19,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class HttpTaskManagerTest {
+public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager>{
     private File file;
-
     private KVServer kvServer;
 
     @BeforeEach
@@ -31,13 +29,15 @@ public class HttpTaskManagerTest {
         try {
             kvServer = new KVServer();
             kvServer.start();
-//            HttpTaskServer httpTaskServer = new HttpTaskServer(8080, httpTaskManager);
-//            httpTaskServer.startServer();
+            taskManager = new HttpTaskManager(file, false);
         } catch (IOException e) {
             throw new KVSException(e.getMessage());
         }
+    }
 
-
+    @AfterEach
+    public void stop(){
+        kvServer.stop();
     }
 
     @Test
