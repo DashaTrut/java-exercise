@@ -42,9 +42,14 @@ public class KVServer {
                     h.sendResponseHeaders(404, 0);
                     return;
                 }
-
-                System.out.println("Значение для ключа " + key + data.get(key));
-                sendText(h, data.get(key));
+                String value = data.get(key);
+                if (value != null){
+                System.out.println("Значение для ключа " + key + value);
+                sendText(h, value);
+                } else {
+                    System.out.println("Нет значения для данного ключа");
+                    h.sendResponseHeaders(404, 0);
+                }
             } else {
                 System.out.println("/load ждёт GET-запрос, а получил: " + h.getRequestMethod());
                 h.sendResponseHeaders(405, 0);

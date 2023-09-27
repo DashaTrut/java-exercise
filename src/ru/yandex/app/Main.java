@@ -26,7 +26,10 @@ public class Main {
             File file = new File("./BestDatabase.csv");
             HttpTaskManager newManager = new HttpTaskManager(file, false);
             Task task666 = new Task("Повторяющаяся задача", "а", 0, Status.NEW);
-
+            Epic task154 = new Epic("Проверка лучшего программис444та", "а", 0, Status.NEW);
+            int t154 = newManager.createEpic(task154);
+            newManager.getEpic(t154);
+            System.out.println(newManager.getHistory());
             int newId666 = newManager.createTask(task666);
             System.out.println(newManager.getTask(newId666));
             System.out.println(newId666);
@@ -45,8 +48,10 @@ public class Main {
             //newManager15.loadKVServer();
             System.out.println(newManager15.getTask(newId777) + "абалдеть33"); // не печатает null
             System.out.println(newManager15.getAllTask() + "абалдеть3");
-            Task task15 = new Task("Проверка лучшего программиста", "а", 0, Status.NEW);
-            int t15 = newManager15.createTask(task15);
+            Epic task15 = new Epic("Проверка лучшего программиста", "а", 0, Status.NEW);
+            int t15 = newManager15.createEpic(task15);
+            newManager15.getEpic(t15);
+            System.out.println(newManager15.getHistory());
             System.out.println(newManager15.getAllTask() + "абалдеть100");
             kvServer.stop();
         } catch (IOException e) {

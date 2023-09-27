@@ -79,7 +79,7 @@ public class InMemoryTaskManager implements TaskManager {
                 saveEpic.addSubtaskIds(subtask.getId()); //положили в эррейлист эпика подзадачу
                 statusEpic(saveEpic);
                 startAndEndTimeSubtaskForEpic(saveEpic);
-                //timeEpic(saveEpic); если время не обязательно с ним не работает
+
                 prioritizedTasks.add(subtask);
             } else {
                 return -1;
@@ -313,11 +313,12 @@ public class InMemoryTaskManager implements TaskManager {
             Epic epic = epics.get(id);
             epics.remove(id);
             inMemoryHistoryManager.remove(id);
-            for (int deleteId : epic.getSubtaskIds()) {
-                prioritizedTasks.remove(subtasks.get(id));
-                subtasks.remove(deleteId);
-                inMemoryHistoryManager.remove(deleteId);
-
+            if (epic.getSubtaskIds() != null) {
+                for (int deleteId : epic.getSubtaskIds()) {
+                    prioritizedTasks.remove(subtasks.get(deleteId));
+                    subtasks.remove(deleteId);
+                    inMemoryHistoryManager.remove(deleteId);
+                }
             }
         }
     }

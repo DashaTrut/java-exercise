@@ -19,7 +19,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager>{
+public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
     private File file;
     private KVServer kvServer;
 
@@ -36,7 +36,7 @@ public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager>{
     }
 
     @AfterEach
-    public void stop(){
+    public void stop() {
         kvServer.stop();
     }
 
